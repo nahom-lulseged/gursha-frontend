@@ -18,16 +18,7 @@ const { Content, Footer } = Layout;
 
 function Dashboard() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user')); 
-
-  const userPaymentInfo = {
-    first_name: user?.username,
-    last_name: user?.username,
-    email: `${user?.username}@gmail.com`,
-    phone_number: user?.phone_number,  
-    tx_ref: Math.random().toString(36).substring(2, 15),
-    return_url : "https://gursha-delivery.vercel.app",
-  }
+  const user = JSON.parse(localStorage.getItem('user'));  
   
   const [state, setState] = useState({
     foods: [],
@@ -111,9 +102,17 @@ function Dashboard() {
 
   const handleShowCart = () => {
     const items = JSON.parse(localStorage.getItem('cart') || '[]');
+    const itemsWithImages = items.map(item => {
+      const food = state.foods.find(f => f.name === item.name);
+      return {
+        ...item,
+        pictures: food?.pictures
+      };
+    });
+    
     setState(prev => ({ 
       ...prev, 
-      cartItems: items, 
+      cartItems: itemsWithImages, 
       isCartModalVisible: true 
     }));
   };
