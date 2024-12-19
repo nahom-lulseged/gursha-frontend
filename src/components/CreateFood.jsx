@@ -6,6 +6,10 @@ import { apiUrl } from '../utils/apiUrl';
 const CreateFood = () => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+  
+  // Get hotelId from parsed user object in localStorage
+  const user = JSON.parse(localStorage.getItem('user'));
+  const hotelId = user?.hotelId;  // Using optional chaining to safely access hotelId
 
   const categoryOptions = [
     { value: 'breakfast', label: 'Breakfast' },
@@ -19,18 +23,22 @@ const CreateFood = () => {
   const onFinish = async (values) => {
     setLoading(true);
     try {
+      const dataToSend = {
+        ...values,
+        hotelId  // Add hotelId from user object
+      };
+
       const response = await fetch(`${apiUrl}/api/foods/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(dataToSend),
       });
 
       if (!response.ok) {
         throw new Error('Failed to create food item');
-      }
-
+      } 
       const data = await response.json();
       message.success('Food item created successfully!');
       form.resetFields();
